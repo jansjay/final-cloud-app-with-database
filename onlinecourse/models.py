@@ -75,7 +75,7 @@ class Lesson(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     content = models.TextField()    
     def __str__(self):
-        return "Title: " + self.nametitle 
+        return "Title: " + self.title 
 
 # Enrollment model
 # <HINT> Once a user enrolled a class, an enrollment entry should be created between the user and course
@@ -121,9 +121,8 @@ class Question(models.Model):
         else:
             return False
     def __str__(self):
-        return "Question Text: " + self.question_text + "," + \
-               "Grade: " + self.grade
-
+        return "Question Text: " + self.question_text
+        
 #  <HINT> Create a Choice Model with:
     # Used to persist choice content for a question
     # One-To-Many (or Many-To-Many if you want to reuse choices) relationship with Question
