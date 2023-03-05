@@ -73,8 +73,9 @@ class Lesson(models.Model):
     title = models.CharField(max_length=200, default="title")
     order = models.IntegerField(default=0)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    content = models.TextField()
-
+    content = models.TextField()    
+    def __str__(self):
+        return "Title: " + self.nametitle 
 
 # Enrollment model
 # <HINT> Once a user enrolled a class, an enrollment entry should be created between the user and course
@@ -130,10 +131,9 @@ class Question(models.Model):
     # Indicate if this choice of the question is a correct one or not
     # Other fields and methods you would like to design
 class Choice(models.Model):
-    question = models.ManyToManyField(Question)
-    choice_text = models.CharField(null=False, max_length=2)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    choice_text = models.CharField(null=False, max_length=1000)
     is_correct = models.BooleanField(null=False)
-    question_id = models.IntegerField(null=False)
 
 # <HINT> The submission model
 # One enrollment could have multiple submission
