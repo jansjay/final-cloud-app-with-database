@@ -140,6 +140,17 @@ def extract_answers(request):
             submitted_anwsers.append(choice_id)
     return submitted_anwsers
 
+class QuestionSubmission:
+    def __init__(self, question, choice_array):
+        self.question = question
+        self.choice_array = choice_array
+
+class ChoiceSubmission:
+    def __init__(self, choice, submission_array):
+        self.choice = choice
+        self.submission_array = submission_array
+    def answered_correctly(self):
+        return self.submission_array.__contains__(self.choice.id)
 
 # <HINT> Create an exam result view to check if learner passed exam and show their question results and result for each question,
 # you may implement it based on the following logic:
@@ -152,13 +163,32 @@ def show_exam_result(request, course_id, submission_id):
     context = {}    
     user = request.user
     if user.is_authenticated:
-        course = get_object_or_404(Course, pk=course_id)
+        course = get_object_or_404(Course, pk=course_id)        
         submission = get_object_or_404(Submission, pk=submission_id)
+        questions = []
+        submission_choice_ids = []
+        total = 0
+        total_possible_score = 0
+        question_submissions = []
+        for choice in submission.choices.all():
+            if not questions.__contains__(choice.question):
+                questions.append(choice.question)
+            if not submission_choice_ids.__contains__(choice.id):
+                submission_choice_ids.append(choice.id)
+        for question in questions:
+            total += question.is_get_score(submission_choice_ids)
+            total_possible_score += question.grade
+            choice_submissions = []
+            for choice in question.choice_set.all():
+                choice_submissions.append(ChoiceSubmission(choice, submission_choice_ids))
+            question_submissions.append(QuestionSubmission(question, choice_submissions))
+        percentage = total / total_possible_score * 100
         context['course'] = course
         context['submission'] = submission
+        context['grade'] = percentage
+        context['question_submissions'] = question_submissions
         return render(request, 'onlinecourse/exam_result_bootstrap.html', context)        
     else:
         return render(request, 'onlinecourse/user_login_bootstrap.html', context)    
-
 
 
